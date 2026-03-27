@@ -2,13 +2,17 @@ package com.workintech.fswebs18challengemaven.controller;
 
 import com.workintech.fswebs18challengemaven.entity.Card;
 import com.workintech.fswebs18challengemaven.repository.CardRepository;
+import com.workintech.fswebs18challengemaven.util.CardValidation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j // Görev 3: Loglama için şart.
+@CrossOrigin("*") // Görev 4: CORS hatasını backend'de bu şekilde çözüyoruz.
 @RestController
-@RequestMapping("/cards") // Tüm istekler localhost:9000/cards üzerinden gelecek
+@RequestMapping("/cards") // Testlerin geçmesi için /cards (Ödev /workintech/cards isterse başına ekle).
 public class CardController {
 
     private final CardRepository cardRepository;
@@ -20,6 +24,7 @@ public class CardController {
 
     @GetMapping
     public List<Card> findAll() {
+        log.info("findAll cards endpoint called");
         return cardRepository.findAll();
     }
 
@@ -30,11 +35,14 @@ public class CardController {
 
     @PostMapping
     public Card save(@RequestBody Card card) {
+        // Görev 1: İş mantığı doğrulamaları util sınıfından çağrılıyor.
+        CardValidation.validateCard(card);
         return cardRepository.save(card);
     }
 
-    @PutMapping
+    @PutMapping("/") // Testlerdeki o son slash hatasını çözmek için "/" ekledik.
     public Card update(@RequestBody Card card) {
+        CardValidation.validateCard(card);
         return cardRepository.update(card);
     }
 
